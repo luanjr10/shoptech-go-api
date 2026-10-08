@@ -1,0 +1,77 @@
+@base = http://localhost:8080/api/v1
+@adminToken = dán-token-admin-vào-đây
+@userToken = dán-token-user-vào-đây
+
+### Kiểm tra server sống
+GET http://localhost:8080/health
+
+### Đăng nhập admin (tài khoản tạo tự động từ .env)
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "admin@shoptech.local", "password": "admin123" }
+
+### Đăng ký khách hàng
+POST {{base}}/auth/register
+Content-Type: application/json
+
+{ "name": "Bùi Văn Luân", "email": "luan@example.com", "password": "secret123" }
+
+### Đăng nhập khách hàng
+POST {{base}}/auth/login
+Content-Type: application/json
+
+{ "email": "luan@example.com", "password": "secret123" }
+
+### Thông tin tài khoản đang đăng nhập
+GET {{base}}/auth/me
+Authorization: Bearer {{userToken}}
+
+### Tạo danh mục (admin)
+POST {{base}}/categories
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "name": "Laptop" }
+
+### Danh sách danh mục
+GET {{base}}/categories
+
+### Tạo sản phẩm (admin)
+POST {{base}}/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "category_id": 1, "name": "MacBook Air M3", "description": "13 inch, 16GB RAM", "price": 25000000, "stock": 10 }
+
+### Tìm kiếm + phân trang sản phẩm
+GET {{base}}/products?q=macbook&category_id=1&page=1&limit=10
+
+### Chi tiết sản phẩm
+GET {{base}}/products/1
+
+### Sửa sản phẩm (admin)
+PUT {{base}}/products/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "category_id": 1, "name": "MacBook Air M3 2024", "price": 24000000, "stock": 8 }
+
+### Đặt hàng (trừ kho trong transaction)
+POST {{base}}/orders
+Authorization: Bearer {{userToken}}
+Content-Type: application/json
+
+{ "items": [ { "product_id": 1, "quantity": 2 } ] }
+
+### Đơn hàng của tôi
+GET {{base}}/orders
+Authorization: Bearer {{userToken}}
+
+### Chi tiết đơn
+GET {{base}}/orders/1
+Authorization: Bearer {{userToken}}
+
+### Huỷ đơn (hoàn kho)
+POST {{base}}/orders/1/cancel
+Authorization: Bearer {{userToken}}
